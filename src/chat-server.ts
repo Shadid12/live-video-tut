@@ -9,12 +9,13 @@ export class ChatServer {
     private port: string | number;
     private server: Server;
     private io: SocketIO.Server;
+    private socketsArray = [];
 
     constructor() {
         this.createApp();
         this.config();
         this.createServer();
-        this.sockets(); // new
+        this.sockets();
         this.listen();
     }
 
@@ -31,13 +32,25 @@ export class ChatServer {
         this.server.listen(this.port, () => {
             console.log('Running server on port %s', this.port);
         });
+
+        this.io.on('connection', (socket) => {
+            socket.broadcast.emit('add-users', {
+                users: [socket.id]
+            });
+
+            socket.on('disconnect', () => {
+                this.socketsArray.splice(this.socketsArray.indexOf(socket.id), 1);
+                this.io.emit('remove-user', socket.id);
+            });
+
+        });
     }
 
     private createServer(): void {
         this.server = createServer(this.app);
     }
 
-    //new 
+     
     private sockets(): void {
         this.io = socketIo(this.server);
     }

@@ -2,7 +2,7 @@
     "compilerOptions": {
       "sourceMap": true,
       "target": "es2017",
-      "outDir": "./dist",
+      "outDir": "public",
       "baseUrl": "./src"
     },
     "include": [
